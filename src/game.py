@@ -1,52 +1,51 @@
 PlayerList = []
 
+Player = dict(name="",
+              score=0,
+              damage=0,
+              health=100,
+              defensePower=0,
+              defense=False)
+
 def initPlayers():
     global PlayerList
     PlayerList = []
 
-def createNewPlayer(name: str, damage: int, defensePower: int):
-    Player = dict(
-        name='',
-        score=0,
-        damage=0,
-        health=100,
-        defensePower=0,
-        defense=False
-    )
-    return Player
+def createNewPlayer(name, damage=0, defensePower=0):
+    return {
+        'name': name,
+        'score': 0,
+        'damage': damage,
+        'health': 100,
+        'defensePower': defensePower,
+        'defense': False
+    }
 
 def addPlayer(player):
-    global PlayerList
     PlayerList.append(player)
 
-def removePlayer(name: str):
+def removePlayer(name):
     global PlayerList
-    for player in PlayerList:
-        if player["name"] == name:
-            PlayerList.remove(player)
-            return
-    print("There is no player with that name!")
+    PlayerList[:] = [player for player in PlayerList if player['name'] != name]
+    if all(player['name'] != name for player in PlayerList):
+        print("There is no player with that name!")
 
-def setPlayer(player: dict, key: str, value):
+def setPlayer(player, key, value):
     if key in player:
         player[key] = value
-    else:
-        print(f"'{key}' is not in player attributes!")
 
-def attackPlayer(attacker: dict, target: dict):
-    if target["defense"]:
-        damage_dealt = max(0, attacker["damage"] - target["defensePower"])
-    else:
-        damage_dealt = attacker["damage"]
+def attackPlayer(attacker, target):
+    damage_taken = max(0, attacker['damage'] - target['defensePower']) if target['defense'] else attacker['damage']
+    new_health = max(0, target['health'] - damage_taken)
+    new_score = attacker['score'] + (0.8 if target['defense'] else 1)
     
-    setPlayer(target, "health", max(0, target["health"] - damage_dealt))
-    setPlayer(attacker, "score", attacker["score"] + damage_dealt)
-    setPlayer(target, "defense", False)
+    setPlayer(attacker, 'score', new_score)
+    setPlayer(target, 'health', new_health)
+    setPlayer(target, 'defense', False)
 
 def displayMatchResult():
     global PlayerList
-    sorted_players = sorted(PlayerList, key=lambda x: (-x["score"], -x["health"]))
+    sorted_players = sorted(PlayerList, key=lambda x: (x['score'], x['health']), reverse=True)
     
-    print("Match Results:")
-    for rank, player in enumerate(sorted_players, start=1):
-        print(f"Rank: {rank}:  {player['name']} | Score: {player['score']} | Health: {player['health']}")
+    for idx, player in enumerate(sorted_players, start=1):
+        print(f"Rank {idx}: {player['name']} | Score: {player['score']} | Health: {player['health']}")
