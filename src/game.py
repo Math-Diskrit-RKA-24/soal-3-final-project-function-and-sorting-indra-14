@@ -26,9 +26,10 @@ def addPlayer(player):
 
 def removePlayer(name):
     global PlayerList
-    PlayerList[:] = [player for player in PlayerList if player['name'] != name]
-    if all(player['name'] != name for player in PlayerList):
+    pemain_update = [player for player in PlayerList if player['name'] != name]
+    if len(pemain_update) == len(PlayerList):
         print("There is no player with that name!")
+    PlayerList[:] = pemain_update
 
 def setPlayer(player, key, value):
     if key in player:
