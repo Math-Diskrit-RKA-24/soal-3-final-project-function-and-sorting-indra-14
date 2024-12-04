@@ -35,13 +35,16 @@ def setPlayer(player, key, value):
         player[key] = value
 
 def attackPlayer(attacker, target):
-    damage_taken = max(0, attacker['damage'] - target['defensePower']) if target['defense'] else attacker['damage']
-    new_health = max(0, target['health'] - damage_taken)
-    new_score = attacker['score'] + (0.8 if target['defense'] else 1)
-    
-    setPlayer(attacker, 'score', new_score)
-    setPlayer(target, 'health', new_health)
-    setPlayer(target, 'defense', False)
+    if target['defense'] == True:
+        targetHealth = target.get("health") - attacker.get("damage") + target.get("defensePower")
+        attackScore = round(attacker.get("score") + 1 - 1 / target["defensePower"], 2)
+    else:
+        targetHealth = target.get("health") - attacker.get("damage")
+        attackScore = attacker.get("score") + 1 
+
+    setPlayer(attacker, 'score', attackScore)
+    setPlayer(target, 'health', max(0, targetHealth))
+    setPlayer(target, 'defense', False) 
 
 def displayMatchResult():
     global PlayerList
